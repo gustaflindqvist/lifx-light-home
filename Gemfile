@@ -13,6 +13,10 @@ gem 'volt', '0.8.22'
 
 # User templates for login, signup, and logout menu.
 gem 'volt-user-templates'
+
+# Form Fields
+gem 'volt-fields'
+
 gem 'lifx'
 gem 'lifx-console'
 

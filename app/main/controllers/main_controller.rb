@@ -1,15 +1,33 @@
 require 'lifx'
 
 class MainController < Volt::ModelController
-  def index
+  def settings
+    self.model = :store
+  end
+
+  def options
+    return page._opts.to_s.or('').split(/,/)
+  end
+
+  def find_all_bulbs
     client = LIFX::Client.lan                  # Talk to bulbs on the LAN
     client.discover! do |c|                    # Discover lights. Blocks until a light with the label 'Office' is found
       c.lights.with_label('Soffan')
     end
   end
 
-  def about
-    # Add code for when the about view is loaded
+  def add_settings
+    self._setting<< page._new_setting
+    page._new_setting = {}
+  end
+
+  def collections
+    # Create an empty item to test things with
+    store._lightbulb.then do
+      if store._lightbulb.size == 0
+        store._lightbulb << {_name: '', _group: ''}
+      end
+    end
   end
 
   private

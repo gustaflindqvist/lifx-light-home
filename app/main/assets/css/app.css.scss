@@ -32,7 +32,16 @@ section {
 }
 
 .nav a {
-  color: #000;
+  color: #fff;
+  font-size: 12px;
+  background-color: #1abc9c;
+  padding: 3px;
+  text-decoration: none;
+}
+
+
+header {
+  background-color: #ecf0f1;
 }
 
 h1 {
@@ -60,6 +69,10 @@ a {
   &:active {
     top: 1px;
   }
+}
+
+label {
+  color: #C3CAD9;
 }
 
 footer {

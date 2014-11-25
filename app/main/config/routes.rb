@@ -1,5 +1,12 @@
 # See https://github.com/voltrb/volt#routes for more info on routes
 
+get "/settings/{{_index}}", _action: 'settings'
+get "/settings", _action: 'settings'
+
+get "/collections/{{_route}}", _action: 'collections'
+get "/collections", _action: 'collections'
+
+
 get '/about', _action: 'about'
 
 # Routes for login and signup, provided by user-templates component gem

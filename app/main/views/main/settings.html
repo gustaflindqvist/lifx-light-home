@@ -1,0 +1,45 @@
+<:Title>
+  Settings
+
+<:Body>
+  <div class="row">
+    <div class="col-md-4">
+
+      <h1>Settings</h1>
+
+      <div class="row">
+        <div class="col-md-6">
+          <p></p>
+        </div>
+        <div class="col-md-6">
+          <button e-click="check_all">Check All</button>
+        </div>
+      </div>
+
+
+      <table class="table setting-table">
+        {{ _settings.each do |setting| }}
+          <tr
+            class=""
+            e-click="params._index = index">
+            <td>{{ setting._name }}</td>
+            <td><button e-click="self._settings.delete_at(index)">X</button></td>
+          </tr>
+        {{ end }}
+      </table>
+
+      <form e-submit="add_setting" role="form">
+        <div class="form-group">
+           <label>Add new Settings:</label>
+           <input class="form-control" type="text" value="{{ page._new_setting._name }}" />
+        </div>
+      </form>
+    </div>
+    <div class="col-md-8">
+      {{ if current_setting }}
+        <h2>{{ current_setting._name }}</h2>
+
+        <textarea>{{ current_setting._description }}</textarea>
+      {{ end }}
+    </div>
+  </div>
