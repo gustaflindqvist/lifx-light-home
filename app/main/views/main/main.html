@@ -5,15 +5,15 @@
   <div class="container">
 
     <header>
-      <div class="content">
-        <ul class="nav nav-pills pull-right">
-          <:nav href="/" text="Home" />
-          <:nav href="/about" text="About" />
-          <:nav href="/settings" text="Settings" />
-          <:user-templates:menu />
-        </ul>
-        <h1 class="text-muted">Lifx-Light-Home</h1>
-      </div>
+      <ul class="nav nav-pills pull-right">
+        <:nav href="/" text="Home" />
+        <:nav href="/about" text="About" />
+        {{ if Volt.user}}
+        <:nav href="/light/settings" text="Settings" />
+        <:nav href="/light/bulbs" text="Lightbulbs" />
+        {{ end }}
+        <:user-templates:menu />
+      </ul>
     </header>
 
     <section class="intro">

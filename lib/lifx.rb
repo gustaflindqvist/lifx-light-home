@@ -1,81 +1,82 @@
-# client = LIFX::Client.lan                  # Talk to bulbs on the LAN
-# client.discover! do |c|                    # Discover lights. Blocks until a light with the label 'Office' is found
-#   c.lights.with_label('Office')
-# end
-#                                            # Blocks for a default of 10 seconds or until a light is found
-# client.lights.turn_on                      # Tell all lights to turn on
-# light = client.lights.with_label('Office') # Get light with label 'Office'
+require 'lifx'
 
-# # Set the Office light to pale green over 5 seconds
-# green = LIFX::Color.green(saturation: 0.5)
-# light.set_color(green, duration: 5)        # Light#set_color is asynchronous
+class LifxControl
+  def initialize label=nil
+    @label = label
+    @client = LIFX::Client.lan
+    @light = nil
+  end
 
-# sleep 5                                    # Wait for light to finish changing
-# light.set_label('My Office')
+  def discover
+    begin
+      @client.discover! do |c|
+        c.lights.with_label(@label)
+      end
+    rescue LIFX::Client::DiscoveryTimeout
+      return "Could not find any LIFX devices."
+    end
+    # Blocks for a default of 10 seconds or until a light is found
+  end
 
-# light.add_tag('Offices')                   # Add tag to light
+  def turn_on
+    discover
+    light = @client.lights.with_label(@label).turn_on
+    $page.store._setting._power = light.power
+  end
 
-# client.lights.with_tag('Offices').turn_off
+  def turn_off
+    discover
+    light = @client.lights.with_label(@label).turn_off
+    $page.store._setting._power = light.power
+  end
 
-# client.flush
+  def light_color_hue hue=0, luminence=0.01
+    discover
+    light = @client.lights.with_label(@label)
+    $page.store._setting._power = light.power
+    interval = 6 # run every 6 seconds
+    light.set_color(LIFX::Color.hsl(hue, 1, luminence), duration: interval) if light
+  end
 
+  def sunrise_light fade_time
+    interval = 6 # run every 6 seconds
+    increment = fade_time/interval
+    luminence = 0.01
+    luminence_increment = 1/increment.to_f
+    hue_increment = 60/increment # Fade from red to bright yellow 0 to 60
+    hue = hue_increment
+    discover
+    @client.lights.with_label(@label).turn_on
+    light = @client.lights.with_label(@label)
+    $page.store._setting._power = light.power
 
-# # require 'lifx'
+    light.set_color(LIFX::Color.hsl(0, 1, luminence), duration: interval)
 
-# class Lifx
-#   def initialize(args)
-#     label = ARGV[0]
-#     time = ARVG[1] ||= 120
-#     client = LIFX::Client.lan
-#   end
+    sunrise = set_interval(interval) do
+      if luminence >= 1
+          sunrise.kill
+      end
 
-#   def discover label
-#     client.discover! do |c|
-#         c.lights.with_label(label)
-#     end
-#   end
+      light.set_color(LIFX::Color.hsl(hue, 1, luminence), duration: interval)
+      luminence = luminence + luminence_increment
+      hue = hue + hue_increment
+    end
 
-#   def turn_on_light
-#     client.lights.turn_on
-#     light = client.lights.with_label(label)
-#   end
+    sunrise.join
+  end
 
-#   def sunrise_light
-#     fade_time = time # time in seconds
-#     interval = 6 # run every 6 seconds
-#     increment = fade_time/interval
-#     luminence = 0.01
-#     luminence_increment = 1/increment.to_f
-#     hue_increment = 60/increment # Fade from red to bright yellow 0 to 60
-#     hue = hue_increment
+  def client_flush
+    @client.flush
+  end
 
-#     light.set_color(LIFX::Color.hsl(0, 1, luminence), duration: interval)
+  private
 
-#     sunrise = set_interval(interval) do
-#       if luminence >= 1
-#           sunrise.kill
-#       end
-
-#       light.set_color(LIFX::Color.hsl(hue, 1, luminence), duration: interval)
-#       luminence = luminence + luminence_increment
-#       hue = hue + hue_increment
-#     end
-
-#     sunrise.join
-#   end
-
-#   def client_flush
-#     client.flush
-#   end
-
-#   private
-
-#   def set_interval(delay)
-#       Thread.new do
-#           loop do
-#               sleep delay
-#               yield
-#           end
-#       end
-#   end
-# end
+  def set_interval(delay)
+      Thread.new do
+          loop do
+              sleep delay
+              yield
+          end
+      end
+  end
+end
