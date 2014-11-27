@@ -36,7 +36,7 @@
     <div class="col-md-8">
       {{ if current_setting }}
         <h2>{{ current_setting._name }}</h2>
-        <p>Power status: {{ current_setting._power }}</p>
+        <p>Power status: {{ get_current_status(current_setting._name) }}</p>
         <textarea>{{ current_setting._description }}</textarea>
       {{ end }}
     </div>

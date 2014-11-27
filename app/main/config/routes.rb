@@ -8,7 +8,7 @@ get '/about', _action: 'about'
 # Routes for login and signup, provided by user-templates component gem
 get '/signup', _controller: 'user', _action: 'signup'
 get '/login', _controller: 'user', _action: 'login'
-get '/user/account', _controller: 'user', _action: 'account'
+get '/account', _controller: 'user', _action: 'account'
 
 get "/light/settings/{{_index}}", _controller: 'light', _action: 'settings'
 get "/light/settings", _controller: 'light', _action: 'settings'

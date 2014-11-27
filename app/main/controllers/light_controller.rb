@@ -5,7 +5,9 @@ class LightController < Volt::ModelController
     self.model = :store
   end
 
-  def find_all_bulbs
+  def get_current_status label
+    light = Light::LifxControl.new(label)
+    light.status(params._index.or(0).to_i)
   end
 
   def current_setting
